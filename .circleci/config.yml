@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: expo/slack@dev:master
+
 commands:
   install_nix:
     steps:
@@ -9,6 +12,7 @@ commands:
     steps:
       - run:
           name: Install common packages
+          # curl: slack sends notifications
           # direnv: configures environment with .envrc files
           # findutils (where, find, etc): expo-module test
           # git: circleci checkout steps
@@ -20,6 +24,7 @@ commands:
           # xz: circleci checkout steps
           command: |
             nix-env -iA \
+              nixpkgs.curl \
               nixpkgs.direnv \
               nixpkgs.findutils \
               nixpkgs.git \
@@ -236,6 +241,12 @@ jobs:
     executor: js
     steps:
       - setup
+      - slack/notify:
+          message: This is a test message from CircleCI
+          author_name: James Ide
+          author_link: https://github.com/ide
+          title: the build is happy
+          footer: what have i done
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
